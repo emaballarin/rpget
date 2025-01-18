@@ -1,4 +1,4 @@
-package pget_test
+package rpget_test
 
 import (
 	"context"
@@ -19,9 +19,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	pget "github.com/replicate/pget/pkg"
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/download"
+	rpget "github.com/emaballarin/rpget/pkg"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/download"
 )
 
 var testFS = fstest.MapFS{
@@ -35,8 +35,8 @@ func init() {
 var defaultOpts = download.Options{Client: client.Options{}}
 var http2Opts = download.Options{Client: client.Options{TransportOpts: client.TransportOptions{ForceHTTP2: true}}}
 
-func makeGetter(opts download.Options) *pget.Getter {
-	return &pget.Getter{
+func makeGetter(opts download.Options) *rpget.Getter {
+	return &rpget.Getter{
 		Downloader: download.GetBufferMode(opts),
 	}
 }
@@ -44,7 +44,7 @@ func makeGetter(opts download.Options) *pget.Getter {
 func tempFilename() string {
 	// get a temp filename that doesn't already exist by creating
 	// a temp file and immediately deleting it
-	dest, _ := os.CreateTemp("", "pget-buffer-test")
+	dest, _ := os.CreateTemp("", "rpget-buffer-test")
 	os.Remove(dest.Name())
 	return dest.Name()
 }
@@ -107,7 +107,7 @@ func TestDownloadSmallFile(t *testing.T) {
 }
 
 func testDownloadSingleFile(opts download.Options, size int64, t *testing.T) {
-	dir, err := os.MkdirTemp("", "pget-buffer-test")
+	dir, err := os.MkdirTemp("", "rpget-buffer-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(dir)
 
@@ -139,10 +139,10 @@ func TestDownload10MH2(t *testing.T)  { testDownloadSingleFile(http2Opts, 10*hum
 func TestDownload100MH2(t *testing.T) { testDownloadSingleFile(http2Opts, 100*humanize.MiByte, t) }
 
 func testDownloadMultipleFiles(opts download.Options, sizes []int64, t *testing.T) {
-	inputDir, err := os.MkdirTemp("", "pget-buffer-test-in")
+	inputDir, err := os.MkdirTemp("", "rpget-buffer-test-in")
 	require.NoError(t, err)
 	defer os.RemoveAll(inputDir)
-	outputDir, err := os.MkdirTemp("", "pget-buffer-test-out")
+	outputDir, err := os.MkdirTemp("", "rpget-buffer-test-out")
 	require.NoError(t, err)
 	defer os.RemoveAll(outputDir)
 
@@ -158,7 +158,7 @@ func testDownloadMultipleFiles(opts download.Options, sizes []int64, t *testing.
 	ts := httptest.NewServer(http.FileServer(http.Dir(inputDir)))
 	defer ts.Close()
 
-	manifest := make(pget.Manifest, 0)
+	manifest := make(rpget.Manifest, 0)
 
 	for _, srcFilename := range srcFilenames {
 		manifest = manifest.AddEntry(ts.URL+"/"+srcFilename, filepath.Join(outputDir, srcFilename))
@@ -198,7 +198,7 @@ func TestDownloadFive10MFiles(t *testing.T) {
 }
 
 func TestManifest_AddEntry(t *testing.T) {
-	entries := make(pget.Manifest, 0)
+	entries := make(rpget.Manifest, 0)
 
 	entries = entries.AddEntry("https://example.com/file1.txt", "/tmp/file1.txt")
 	assert.Len(t, entries, 1)

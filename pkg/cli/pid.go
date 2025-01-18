@@ -7,7 +7,7 @@ import (
 	"os"
 	"syscall"
 
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 type PIDFile struct {
@@ -32,7 +32,7 @@ func (p *PIDFile) Acquire() error {
 			if err != nil {
 				logger.Warn().
 					Err(err).
-					Str("warn_message", "Another pget process may be running, use 'pget multifile' to download multiple files in parallel").
+					Str("warn_message", "Another rpget process may be running, use 'rpget multifile' to download multiple files in parallel").
 					Msg("Waiting on Lock")
 				logger.Debug().Str("blocking_lock_acquire", "true").Msg("Waiting on Lock")
 				err = syscall.Flock(p.fd, syscall.LOCK_EX)

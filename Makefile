@@ -26,17 +26,17 @@ all: clean build
 .PHONY: install
 install: build
 	$(INSTALL_PROGRAM) -d $(DESTDIR)$(BINDIR)
-	$(INSTALL_PROGRAM) pget $(DESTDIR)$(BINDIR)/pget
+	$(INSTALL_PROGRAM) rpget $(DESTDIR)$(BINDIR)/rpget
 
 .PHONY: uninstall
 uninstall:
-	rm -f $(DESTDIR)$(BINDIR)/pget
+	rm -f $(DESTDIR)$(BINDIR)/rpget
 
 .PHONY: clean
 clean:
 	$(GO) clean
 	rm -rf dist
-	rm -f pget
+	rm -f rpget
 
 
 .PHONY: test-all
@@ -66,11 +66,11 @@ install-goreleaser:
 
 
 .PHONY: build
-build: pget
+build: rpget
 
 .PHONY: build-all
 build-all: SINGLE_TARGET:=
-build-all: clean pget
+build-all: clean rpget
 
-pget: install-goreleaser
-	$(GORELEASER) build --snapshot --clean $(SINGLE_TARGET) -o ./pget
+rpget: install-goreleaser
+	$(GORELEASER) build --snapshot --clean $(SINGLE_TARGET) -o ./rpget

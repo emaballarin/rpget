@@ -10,8 +10,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/config"
 )
 
 func TestRetryPolicy(t *testing.T) {

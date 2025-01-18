@@ -12,32 +12,32 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/replicate/pget/cmd/version"
-	pget "github.com/replicate/pget/pkg"
-	"github.com/replicate/pget/pkg/cli"
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/download"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/cmd/version"
+	rpget "github.com/emaballarin/rpget/pkg"
+	"github.com/emaballarin/rpget/pkg/cli"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/download"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 const rootLongDesc = `
-pget
+rpget
 
-PGet is a high performance, concurrent file downloader built in Go. It is designed to speed up and optimize file
+Rpget is a high performance, concurrent file downloader built in Go. It is designed to speed up and optimize file
 downloads from cloud storage services such as Amazon S3 and Google Cloud Storage.
 
-The primary advantage of PGet is its ability to download files in parallel using multiple threads. By dividing the file
-into chunks and downloading multiple chunks simultaneously, PGet significantly reduces the total download time for large
+The primary advantage of Rpget is its ability to download files in parallel using multiple threads. By dividing the file
+into chunks and downloading multiple chunks simultaneously, Rpget significantly reduces the total download time for large
 files.
 
-If the downloaded file is a tar archive, PGet can automatically extract the contents of the archive in memory, thus
+If the downloaded file is a tar archive, Rpget can automatically extract the contents of the archive in memory, thus
 removing the need for an additional extraction step.
 
-The efficiency of PGet's tar extraction lies in its approach to handling data. Instead of writing the downloaded tar
-file to disk and then reading it back into memory for extraction, PGet conducts the extraction directly from the
+The efficiency of Rpget's tar extraction lies in its approach to handling data. Instead of writing the downloaded tar
+file to disk and then reading it back into memory for extraction, Rpget conducts the extraction directly from the
 in-memory download buffer. This method avoids unnecessary memory copies and disk I/O, leading to an increase in
-performance, especially when dealing with large tar files. This makes PGet not just a parallel downloader, but also an
+performance, especially when dealing with large tar files. This makes Rpget not just a parallel downloader, but also an
 efficient file extractor, providing a streamlined solution for fetching and unpacking files.
 `
 
@@ -49,14 +49,14 @@ const chunkSizeDefault = "125M"
 
 func GetCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:                "pget [flags] <url> <dest>",
-		Short:              "pget",
+		Use:                "rpget [flags] <url> <dest>",
+		Short:              "rpget",
 		Long:               rootLongDesc,
 		PersistentPreRunE:  rootPersistentPreRunEFunc,
 		PersistentPostRunE: rootPersistentPostRunEFunc,
 		RunE:               runRootCMD,
 		Args:               validateArgs,
-		Example:            `  pget https://example.com/file.tar ./target-dir`,
+		Example:            `  rpget https://example.com/file.tar ./target-dir`,
 	}
 	cmd.Flags().BoolP(config.OptExtract, "x", false, "OptExtract archive after download")
 	cmd.SetUsageTemplate(cli.UsageTemplate)
@@ -84,11 +84,11 @@ func GetCommand() *cobra.Command {
 func defaultPidFilePath() string {
 	// If we're on OS X, use the user's home directory
 	// Otherwise, use /run
-	path := "/run/pget.pid"
+	path := "/run/rpget.pid"
 	if xdgPath, ok := os.LookupEnv("XDG_RUNTIME_DIR"); ok {
-		path = xdgPath + "/pget.pid"
+		path = xdgPath + "/rpget.pid"
 	} else if runtime.GOOS == "darwin" {
-		path = os.Getenv("HOME") + "/.pget.pid"
+		path = os.Getenv("HOME") + "/.rpget.pid"
 	}
 	return path
 }
@@ -123,11 +123,11 @@ func rootPersistentPreRunEFunc(cmd *cobra.Command, args []string) error {
 	// * If either cli option is set, use that value
 	// * If both are set, emit an error
 	// * If neither are set, use ENV values
-	// ** If PGET_CHUNK_SIZE is set, use that value
-	// ** If PGET_CHUNK_SIZE is not set, use PGET_MINIMUM_CHUNK_SIZE if set
-	//    NOTE: PGET_MINIMUM_CHUNK_SIZE value is just set over the key for PGET_CHUNK_SIZE
+	// ** If rpget_CHUNK_SIZE is set, use that value
+	// ** If rpget_CHUNK_SIZE is not set, use rpget_MINIMUM_CHUNK_SIZE if set
+	//    NOTE: rpget_MINIMUM_CHUNK_SIZE value is just set over the key for rpget_CHUNK_SIZE
 	//    Warning message will be emitted
-	// ** If both PGET_CHUNK_SIZE and PGET_MINIMUM_CHUNK_SIZE are set, use PGET_CHUNK_SIZE
+	// ** If both rpget_CHUNK_SIZE and rpget_MINIMUM_CHUNK_SIZE are set, use rpget_CHUNK_SIZE
 	//    Warning message will be emitted if they differ
 	// * If neither are set, use the default value
 
@@ -140,10 +140,10 @@ func rootPersistentPreRunEFunc(cmd *cobra.Command, args []string) error {
 	chunkSizeEnv := viper.GetString(config.OptChunkSize)
 	if minChunkSizeEnv != chunkSizeDefault && minChunkSizeEnv != chunkSizeEnv {
 		if chunkSizeEnv == chunkSizeDefault {
-			logger.Warn().Msg("Using PGET_MINIMUM_CHUNK_SIZE is deprecated, use PGET_CHUNK_SIZE instead")
+			logger.Warn().Msg("Using rpget_MINIMUM_CHUNK_SIZE is deprecated, use rpget_CHUNK_SIZE instead")
 			viper.Set(config.OptChunkSize, minChunkSizeEnv)
 		} else {
-			logger.Warn().Msg("Both PGET_MINIMUM_CHUNK_SIZE and PGET_CHUNK_SIZE are set, using PGET_CHUNK_SIZE")
+			logger.Warn().Msg("Both rpget_MINIMUM_CHUNK_SIZE and rpget_CHUNK_SIZE are set, using rpget_CHUNK_SIZE")
 		}
 	}
 
@@ -268,7 +268,7 @@ func rootExecute(ctx context.Context, urlString, dest string) error {
 		return err
 	}
 
-	getter := pget.Getter{
+	getter := rpget.Getter{
 		Downloader: download.GetBufferMode(downloadOpts),
 		Consumer:   consumer,
 	}

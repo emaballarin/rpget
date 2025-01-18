@@ -1,4 +1,4 @@
-module github.com/replicate/pget
+module github.com/emaballarin/rpget
 
 go 1.23
 

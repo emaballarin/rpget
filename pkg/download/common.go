@@ -11,8 +11,8 @@ import (
 
 	"github.com/dustin/go-humanize"
 
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 const defaultChunkSize = 125 * humanize.MiByte

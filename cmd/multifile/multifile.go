@@ -10,31 +10,31 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	pget "github.com/replicate/pget/pkg"
-	"github.com/replicate/pget/pkg/cli"
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/download"
-	"github.com/replicate/pget/pkg/logging"
+	rpget "github.com/emaballarin/rpget/pkg"
+	"github.com/emaballarin/rpget/pkg/cli"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/download"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 const longDesc = `
-'multifile' mode for pget takes a manifest file as input (can use '-' for stdin) and downloads all files listed in the manifest.
+'multifile' mode for rpget takes a manifest file as input (can use '-' for stdin) and downloads all files listed in the manifest.
 
 The manifest is expected to be in the format of a newline-separated list of pairs of URLs and destination paths, separated by a space.
 e.g.
 https://example.com/file1.txt /tmp/file1.txt
 
-'multifile'' will download files in parallel limited to the '--maximum-connections-per-host' limit for per-host limts and 
+'multifile'' will download files in parallel limited to the '--maximum-connections-per-host' limit for per-host limts and
 over-all limited to the '--max-concurrency' limit for overall concurrency.
 `
 
 const multifileExamples = `
-  pget multifile manifest.txt
+  rpget multifile manifest.txt
 
-  pget multifile - < manifest.txt
+  rpget multifile - < manifest.txt
 
-  cat multifile.txt | pget multifile -
+  cat multifile.txt | rpget multifile -
 `
 
 // test seam
@@ -96,7 +96,7 @@ func maxConcurrentFiles() int {
 	return maxConcurrentFiles
 }
 
-func multifileExecute(ctx context.Context, manifest pget.Manifest) error {
+func multifileExecute(ctx context.Context, manifest rpget.Manifest) error {
 	chunkSize, err := humanize.ParseBytes(viper.GetString(config.OptChunkSize))
 	if err != nil {
 		return err
@@ -122,7 +122,7 @@ func multifileExecute(ctx context.Context, manifest pget.Manifest) error {
 		ChunkSize:      int64(chunkSize),
 		Client:         clientOpts,
 	}
-	pgetOpts := pget.Options{
+	rpgetOpts := rpget.Options{
 		MaxConcurrentFiles: maxConcurrentFiles(),
 	}
 
@@ -131,10 +131,10 @@ func multifileExecute(ctx context.Context, manifest pget.Manifest) error {
 		return fmt.Errorf("error getting consumer: %w", err)
 	}
 
-	getter := &pget.Getter{
+	getter := &rpget.Getter{
 		Downloader: download.GetBufferMode(downloadOpts),
 		Consumer:   consumer,
-		Options:    pgetOpts,
+		Options:    rpgetOpts,
 	}
 
 	// TODO DRY this

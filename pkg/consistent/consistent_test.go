@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/replicate/pget/pkg/consistent"
+	"github.com/emaballarin/rpget/pkg/consistent"
 )
 
 func TestHashingDoesNotChangeWhenZeroValueFieldsAreAdded(t *testing.T) {

@@ -11,7 +11,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/replicate/pget/pkg/consumer"
+	"github.com/emaballarin/rpget/pkg/consumer"
 )
 
 const (

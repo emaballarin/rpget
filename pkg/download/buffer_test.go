@@ -7,8 +7,8 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/download"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/download"
 )
 
 func init() {

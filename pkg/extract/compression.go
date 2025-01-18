@@ -10,7 +10,7 @@ import (
 	"github.com/pierrec/lz4"
 	"github.com/ulikunitz/xz"
 
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 const (

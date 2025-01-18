@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/replicate/pget/pkg/extract"
+	"github.com/emaballarin/rpget/pkg/extract"
 )
 
 type TarExtractor struct {

@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"runtime"
 
-	"github.com/replicate/pget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/client"
 )
 
 type Options struct {

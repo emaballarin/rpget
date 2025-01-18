@@ -11,9 +11,9 @@ import (
 
 	"github.com/hashicorp/go-retryablehttp"
 
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/logging"
-	"github.com/replicate/pget/pkg/version"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/version"
 )
 
 const (
@@ -29,14 +29,14 @@ type HTTPClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-// PGetHTTPClient is a wrapper around http.Client that allows for limiting the number of concurrent connections per host
+// RPGetHTTPClient is a wrapper around http.Client that allows for limiting the number of concurrent connections per host
 // utilizing a client pool. If the OptMaxConnPerHost option is not set, the client pool will not be used.
-type PGetHTTPClient struct {
+type RPGetHTTPClient struct {
 	*http.Client
 }
 
-func (c *PGetHTTPClient) Do(req *http.Request) (*http.Response, error) {
-	req.Header.Set("User-Agent", fmt.Sprintf("pget/%s", version.GetVersion()))
+func (c *RPGetHTTPClient) Do(req *http.Request) (*http.Response, error) {
+	req.Header.Set("User-Agent", fmt.Sprintf("rpget/%s", version.GetVersion()))
 	return c.Client.Do(req)
 }
 
@@ -98,7 +98,7 @@ func NewHTTPClient(opts Options) HTTPClient {
 	}
 
 	client := retryClient.StandardClient()
-	return &PGetHTTPClient{Client: client}
+	return &RPGetHTTPClient{Client: client}
 }
 
 // RetryPolicy wraps retryablehttp.DefaultRetryPolicy and included additional logic:

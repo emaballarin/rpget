@@ -12,8 +12,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 const UsageTemplate = `

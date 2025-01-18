@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 type BufferMode struct {

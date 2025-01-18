@@ -10,11 +10,11 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/replicate/pget/pkg/consumer"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/consumer"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
-const viperEnvPrefix = "PGET"
+const viperEnvPrefix = "RPGET"
 
 const (
 	ConsumerFile         = "file"
@@ -182,7 +182,7 @@ func GetCacheSRV() string {
 }
 
 // CacheableURIPrefixes returns a map of cache URI prefixes to send through consistent hash, if set.
-// ENV is `PGET_CACHE_URI_PREFIXES`, and the
+// ENV is `RPGET_CACHE_URI_PREFIXES`, and the
 // format is `https://example.com/prefix1 https://example.com/prefix2 https://example.com/ [...]`
 func CacheableURIPrefixes() map[string][]*url.URL {
 	logger := logging.GetLogger()

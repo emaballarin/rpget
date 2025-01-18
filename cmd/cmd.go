@@ -3,9 +3,9 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 
-	"github.com/replicate/pget/cmd/multifile"
-	"github.com/replicate/pget/cmd/root"
-	"github.com/replicate/pget/cmd/version"
+	"github.com/emaballarin/rpget/cmd/multifile"
+	"github.com/emaballarin/rpget/cmd/root"
+	"github.com/emaballarin/rpget/cmd/version"
 )
 
 func GetRootCommand() *cobra.Command {

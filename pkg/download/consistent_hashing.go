@@ -10,10 +10,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/consistent"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/consistent"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 type ConsistentHashingMode struct {

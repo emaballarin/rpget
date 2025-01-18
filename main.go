@@ -3,8 +3,8 @@ package main
 import (
 	"os"
 
-	"github.com/replicate/pget/cmd"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/cmd"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 func main() {

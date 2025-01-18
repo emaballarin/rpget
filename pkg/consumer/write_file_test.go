@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/replicate/pget/pkg/consumer"
+	"github.com/emaballarin/rpget/pkg/consumer"
 )
 
 func TestFileWriter_Consume(t *testing.T) {

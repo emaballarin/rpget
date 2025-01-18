@@ -1,4 +1,4 @@
-package pget
+package rpget
 
 import (
 	"context"
@@ -9,9 +9,9 @@ import (
 	"github.com/dustin/go-humanize"
 	"golang.org/x/sync/errgroup"
 
-	"github.com/replicate/pget/pkg/consumer"
-	"github.com/replicate/pget/pkg/download"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/consumer"
+	"github.com/emaballarin/rpget/pkg/download"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 type Getter struct {

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 var ErrZipSlip = errors.New("archive (tar) file contains file outside of target directory")
@@ -41,7 +41,7 @@ func TarFile(r *bufio.Reader, destDir string, overwrite bool) error {
 		}
 		log.Info().
 			Str("decompressor", fmt.Sprintf("%T", decompressor)).
-			Msg("Tar Compression Detected: Compression can significantly slowdown pget (e.g. for model weights)")
+			Msg("Tar Compression Detected: Compression can significantly slowdown rpget (e.g. for model weights)")
 	}
 	tarReader := tar.NewReader(reader)
 	logger := logging.GetLogger()

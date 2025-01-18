@@ -18,8 +18,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/download"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/download"
 )
 
 var testFSes = []fstest.MapFS{

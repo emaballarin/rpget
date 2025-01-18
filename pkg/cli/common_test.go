@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/replicate/pget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/config"
 )
 
 func TestEnsureDestinationNotExist(t *testing.T) {

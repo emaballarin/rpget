@@ -12,10 +12,10 @@ import (
 
 	"github.com/spf13/viper"
 
-	pget "github.com/replicate/pget/pkg"
-	"github.com/replicate/pget/pkg/cli"
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/logging"
+	rpget "github.com/emaballarin/rpget/pkg"
+	"github.com/emaballarin/rpget/pkg/cli"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 // A manifest is a file consisting of pairs of URLs and paths:
@@ -64,10 +64,10 @@ func checkSeenDestinations(destinations map[string]string, dest string, url stri
 	return nil
 }
 
-func parseManifest(file io.Reader) (pget.Manifest, error) {
+func parseManifest(file io.Reader) (rpget.Manifest, error) {
 	logger := logging.GetLogger()
 	seenDestinations := make(map[string]string)
-	manifest := make(pget.Manifest, 0)
+	manifest := make(rpget.Manifest, 0)
 
 	scanner := bufio.NewScanner(file)
 
@@ -86,7 +86,7 @@ func parseManifest(file io.Reader) (pget.Manifest, error) {
 
 		}
 
-		// THIS IS A BODGE - FIX ME MOVE THESE THINGS TO PGET
+		// THIS IS A BODGE - FIX ME MOVE THESE THINGS TO RPGET
 		// and make the consumer responsible for knowing if this
 		// is allowed/not allowed/etc
 		consumer := viper.GetString(config.OptOutputConsumer)
