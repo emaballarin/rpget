@@ -11,8 +11,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/emaballarin/pget/pkg/config"
-	"github.com/emaballarin/pget/pkg/version"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/version"
 
 	"github.com/dustin/go-humanize"
 	"golang.org/x/sync/errgroup"
@@ -152,7 +152,7 @@ func (g *Getter) sendMetrics(url string, size int64) {
 	}
 
 	payload := MetricsPayload{
-		Source: "pget",
+		Source: "rpget",
 		Type:   "download",
 		Data:   map[string]any{"url": url, "size": size, "version": version.GetVersion()},
 	}

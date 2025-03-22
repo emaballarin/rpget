@@ -132,7 +132,7 @@ func multifileExecute(ctx context.Context, manifest rpget.Manifest) error {
 		return fmt.Errorf("error getting consumer: %w", err)
 	}
 
-	getter := pget.Getter{
+	getter := rpget.Getter{
 		Consumer: consumer,
 		Options:  pgetOpts,
 	}
