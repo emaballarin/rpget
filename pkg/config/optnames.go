@@ -5,9 +5,11 @@ const (
 	// envvar, not command line
 	OptCacheNodesSRVNameByHostCIDR = "cache-nodes-srv-name-by-host-cidr"
 	OptCacheNodesSRVName           = "cache-nodes-srv-name"
+	OptCacheServiceHostname        = "cache-service-hostname"
 	OptCacheURIPrefixes            = "cache-uri-prefixes"
 	OptCacheUsePathProxy           = "cache-use-path-proxy"
 	OptHostIP                      = "host-ip"
+	OptMetricsEndpoint             = "metrics-endpoint"
 
 	// Normal options with CLI arguments
 	OptConcurrency        = "concurrency"

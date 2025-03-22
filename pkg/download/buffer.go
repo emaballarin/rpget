@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/emaballarin/rpget/pkg/client"
 	"github.com/emaballarin/rpget/pkg/logging"
@@ -59,6 +61,11 @@ func (m *BufferMode) Fetch(ctx context.Context, url string) (io.Reader, int64, e
 	firstReqResultCh := make(chan firstReqResult)
 	m.queue.submitLow(func(buf []byte) {
 		defer close(firstReqResultCh)
+
+		if m.CacheHosts != nil {
+			url = m.rewriteUrlForCache(url)
+		}
+
 		firstChunkResp, err := m.DoRequest(ctx, 0, m.chunkSize()-1, url)
 		if err != nil {
 			firstReqResultCh <- firstReqResult{err: err}
@@ -179,4 +186,70 @@ func (m *BufferMode) DoRequest(ctx context.Context, start, end int64, trueURL st
 	}
 
 	return resp, nil
+}
+
+func (m *BufferMode) rewriteUrlForCache(urlString string) string {
+	logger := logging.GetLogger()
+	parsed, err := url.Parse(urlString)
+	if m.CacheHosts == nil || len(m.CacheHosts) != 1 {
+		logger.Error().
+			Str("url", urlString).
+			Bool("enabled", false).
+			Str("disabled_reason", fmt.Sprintf("expected exactly 1 cache host, received %d", len(m.CacheHosts))).
+			Msg("Cache URL Rewrite")
+		return urlString
+	}
+	if err != nil {
+		logger.Error().
+			Err(err).
+			Str("url", urlString).
+			Bool("enabled", false).
+			Str("disabled_reason", "failed to parse URL").
+			Msg("Cache URL Rewrite")
+		return urlString
+	}
+	if prefixes, ok := m.CacheableURIPrefixes[parsed.Host]; ok {
+		for _, pfx := range prefixes {
+			if pfx.Path == "/" || strings.HasPrefix(parsed.Path, pfx.Path) {
+				newUrl := m.CacheHosts[0]
+				if m.CacheUsePathProxy {
+					newUrl, err = url.JoinPath(newUrl, pfx.Host)
+					if err != nil {
+						break
+					}
+					logger.Debug().
+						Bool("path_based_proxy", true).
+						Str("host_prefix", pfx.Host).
+						Str("intermediate_target_url", newUrl).
+						Str("url", urlString).
+						Msg("Cache URL Rewrite")
+				}
+				newUrl, err = url.JoinPath(newUrl, parsed.Path)
+				if err != nil {
+					break
+				}
+				logger.Info().
+					Str("url", urlString).
+					Str("target_url", newUrl).
+					Bool("enabled", true).
+					Msg("Cache URL Rewrite")
+				return newUrl
+			}
+		}
+	}
+	if err != nil {
+		logger.Error().
+			Err(err).
+			Str("url", urlString).
+			Bool("enabled", false).
+			Str("disabled_reason", "failed to generate target url").
+			Msg("Cache URL Rewrite")
+	} else {
+		logger.Debug().
+			Str("url", urlString).
+			Bool("enabled", false).
+			Str("disabled_reason", "no matching prefix").
+			Msg("Cache URL Rewrite")
+	}
+	return urlString
 }

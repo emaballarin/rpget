@@ -268,25 +268,35 @@ func rootExecute(ctx context.Context, urlString, dest string) error {
 		return err
 	}
 
-	getter := rpget.Getter{
-		Downloader: download.GetBufferMode(downloadOpts),
-		Consumer:   consumer,
+	pgetOpts := pget.Options{
+		MetricsEndpoint: viper.GetString(config.OptMetricsEndpoint),
+	}
+
+	getter := pget.Getter{
+		Consumer: consumer,
+		Options:  pgetOpts,
 	}
 
 	// TODO DRY this
 	if srvName := config.GetCacheSRV(); srvName != "" {
 		downloadOpts.SliceSize = 500 * humanize.MiByte
-		// FIXME: make this a config option
 		downloadOpts.CacheableURIPrefixes = config.CacheableURIPrefixes()
 		downloadOpts.CacheUsePathProxy = viper.GetBool(config.OptCacheUsePathProxy)
-		downloadOpts.CacheHosts, err = cli.LookupCacheHosts(srvName)
-		if err != nil {
+		if downloadOpts.CacheHosts, err = cli.LookupCacheHosts(srvName); err != nil {
 			return err
 		}
 		getter.Downloader, err = download.GetConsistentHashingMode(downloadOpts)
 		if err != nil {
 			return err
 		}
+	} else if cacheHostname := config.CacheServiceHostname(); cacheHostname != "" {
+		downloadOpts.CacheHosts = []string{cacheHostname}
+		downloadOpts.CacheableURIPrefixes = config.CacheableURIPrefixes()
+		downloadOpts.CacheUsePathProxy = viper.GetBool(config.OptCacheUsePathProxy)
+	}
+
+	if getter.Downloader == nil {
+		getter.Downloader = download.GetBufferMode(downloadOpts)
 	}
 
 	_, _, err = getter.DownloadFile(ctx, urlString, dest)

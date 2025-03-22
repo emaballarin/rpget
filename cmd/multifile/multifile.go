@@ -124,6 +124,7 @@ func multifileExecute(ctx context.Context, manifest rpget.Manifest) error {
 	}
 	rpgetOpts := rpget.Options{
 		MaxConcurrentFiles: maxConcurrentFiles(),
+		MetricsEndpoint:    viper.GetString(config.OptMetricsEndpoint),
 	}
 
 	consumer, err := config.GetConsumer()
@@ -131,10 +132,9 @@ func multifileExecute(ctx context.Context, manifest rpget.Manifest) error {
 		return fmt.Errorf("error getting consumer: %w", err)
 	}
 
-	getter := &rpget.Getter{
-		Downloader: download.GetBufferMode(downloadOpts),
-		Consumer:   consumer,
-		Options:    rpgetOpts,
+	getter := pget.Getter{
+		Consumer: consumer,
+		Options:  pgetOpts,
 	}
 
 	// TODO DRY this
@@ -142,14 +142,21 @@ func multifileExecute(ctx context.Context, manifest rpget.Manifest) error {
 		downloadOpts.SliceSize = 500 * humanize.MiByte
 		downloadOpts.CacheableURIPrefixes = config.CacheableURIPrefixes()
 		downloadOpts.CacheUsePathProxy = viper.GetBool(config.OptCacheUsePathProxy)
-		downloadOpts.CacheHosts, err = cli.LookupCacheHosts(srvName)
-		if err != nil {
+		if downloadOpts.CacheHosts, err = cli.LookupCacheHosts(srvName); err != nil {
 			return err
 		}
 		getter.Downloader, err = download.GetConsistentHashingMode(downloadOpts)
 		if err != nil {
 			return err
 		}
+	} else if cacheHostname := config.CacheServiceHostname(); cacheHostname != "" {
+		downloadOpts.CacheHosts = []string{cacheHostname}
+		downloadOpts.CacheableURIPrefixes = config.CacheableURIPrefixes()
+		downloadOpts.CacheUsePathProxy = viper.GetBool(config.OptCacheUsePathProxy)
+	}
+
+	if getter.Downloader == nil {
+		getter.Downloader = download.GetBufferMode(downloadOpts)
 	}
 
 	totalFileSize, elapsedTime, err := getter.DownloadFiles(ctx, manifest)
