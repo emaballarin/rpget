@@ -11,8 +11,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/version"
+	"github.com/emaballarin/pget/pkg/config"
+	"github.com/emaballarin/pget/pkg/version"
 
 	"github.com/dustin/go-humanize"
 	"golang.org/x/sync/errgroup"
