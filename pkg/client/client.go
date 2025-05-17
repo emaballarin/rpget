@@ -9,6 +9,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"github.com/hashicorp/go-retryablehttp"
 
 	"github.com/emaballarin/rpget/pkg/config"
@@ -33,10 +35,14 @@ type HTTPClient interface {
 // utilizing a client pool. If the OptMaxConnPerHost option is not set, the client pool will not be used.
 type RPGetHTTPClient struct {
 	*http.Client
+	headers map[string]string
 }
 
 func (c *RPGetHTTPClient) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Set("User-Agent", fmt.Sprintf("rpget/%s", version.GetVersion()))
+	for k, v := range c.headers {
+		req.Header.Set(k, v)
+	}
 	return c.Client.Do(req)
 }
 
@@ -98,7 +104,7 @@ func NewHTTPClient(opts Options) HTTPClient {
 	}
 
 	client := retryClient.StandardClient()
-	return &RPGetHTTPClient{Client: client}
+	return &RPGetHTTPClient{Client: client, headers: viper.GetStringMapString(config.OptHeaders)}
 }
 
 // RetryPolicy wraps retryablehttp.DefaultRetryPolicy and included additional logic:
