@@ -12,9 +12,9 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 
-	"github.com/replicate/pget/pkg/client"
-	"github.com/replicate/pget/pkg/config"
-	"github.com/replicate/pget/pkg/logging"
+	"github.com/emaballarin/rpget/pkg/client"
+	"github.com/emaballarin/rpget/pkg/config"
+	"github.com/emaballarin/rpget/pkg/logging"
 )
 
 type BufferMode struct {

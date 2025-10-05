@@ -38,7 +38,7 @@ type Options struct {
 	CacheHosts []string
 
 	// ForceCachePrefixRewrite will forcefully rewrite the prefix for all
-	// pget requests to the first item in the CacheHosts list. This ignores
+	// rpget requests to the first item in the CacheHosts list. This ignores
 	// anything in the CacheableURIPrefixes and rewrites all requests.
 	ForceCachePrefixRewrite bool
 }

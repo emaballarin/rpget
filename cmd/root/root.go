@@ -268,13 +268,13 @@ func rootExecute(ctx context.Context, urlString, dest string) error {
 		return err
 	}
 
-	pgetOpts := rpget.Options{
+	rpgetOpts := rpget.Options{
 		MetricsEndpoint: viper.GetString(config.OptMetricsEndpoint),
 	}
 
 	getter := rpget.Getter{
 		Consumer: consumer,
-		Options:  pgetOpts,
+		Options:  rpgetOpts,
 	}
 
 	// TODO DRY this

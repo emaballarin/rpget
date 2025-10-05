@@ -20,13 +20,6 @@ sudo curl -o /usr/local/bin/rpget -L "https://github.com/emaballarin/rrpget/rele
 sudo chmod +x /usr/local/bin/rpget
 ```
 
-If you're using macOS, you can install Rpget with Homebrew:
-
-```console
-brew tap replicate/tap
-brew install replicate/tap/pget
-```
-
 Or you can build from source and install it with these commands
 (requires Go 1.19 or later):
 
