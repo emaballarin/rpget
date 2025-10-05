@@ -10,23 +10,27 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog"
+	"github.com/spf13/viper"
 
-	"github.com/emaballarin/rpget/pkg/client"
-	"github.com/emaballarin/rpget/pkg/logging"
+	"github.com/replicate/pget/pkg/client"
+	"github.com/replicate/pget/pkg/config"
+	"github.com/replicate/pget/pkg/logging"
 )
 
 type BufferMode struct {
 	Client client.HTTPClient
 	Options
 
-	queue *priorityWorkQueue
+	queue      *priorityWorkQueue
+	redirected bool
 }
 
 func GetBufferMode(opts Options) *BufferMode {
 	client := client.NewHTTPClient(opts.Client)
 	m := &BufferMode{
-		Client:  client,
-		Options: opts,
+		Client:     client,
+		Options:    opts,
+		redirected: false,
 	}
 	m.queue = newWorkQueue(opts.maxConcurrency(), m.chunkSize())
 	m.queue.start()
@@ -46,8 +50,9 @@ func (m *BufferMode) getFileSizeFromResponse(resp *http.Response) (int64, error)
 	// file was returned. If it isn't, we will assume this was a 206 Partial Content
 	// and parse the file size from the content range header. We wouldn't be in this
 	// function if the response was not between 200 and 300, so this feels like a
-	// reasonable assumption
-	if resp.StatusCode == http.StatusOK {
+	// reasonable assumption. If we get a content range header though, we should
+	// always use that
+	if resp.StatusCode == http.StatusOK && resp.Header.Get("Content-Range") == "" {
 		return m.getFileSizeFromContentLength(resp.Header.Get("Content-Length"))
 	}
 	return m.getFileSizeFromContentRange(resp.Header.Get("Content-Range"))
@@ -100,6 +105,7 @@ func (m *BufferMode) Fetch(ctx context.Context, url string) (io.Reader, int64, e
 		trueURL := firstChunkResp.Request.URL.String()
 		if trueURL != url {
 			logger.Info().Str("url", url).Str("redirect_url", trueURL).Msg("Redirect")
+			m.redirected = true
 		}
 
 		fileSize, err := m.getFileSizeFromResponse(firstChunkResp)
@@ -200,6 +206,10 @@ func (m *BufferMode) DoRequest(ctx context.Context, start, end int64, trueURL st
 		return nil, fmt.Errorf("failed to download %s: %w", trueURL, err)
 	}
 	req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, end))
+	proxyAuthHeader := viper.GetString(config.OptProxyAuthHeader)
+	if proxyAuthHeader != "" && !m.redirected {
+		req.Header.Set("Authorization", proxyAuthHeader)
+	}
 	resp, err := m.Client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("error executing request for %s: %w", req.URL.String(), err)
@@ -220,6 +230,14 @@ func (m *BufferMode) rewriteUrlForCache(urlString string) string {
 			Bool("enabled", false).
 			Str("disabled_reason", fmt.Sprintf("expected exactly 1 cache host, received %d", len(m.CacheHosts))).
 			Msg("Cache URL Rewrite")
+		return urlString
+	}
+	if strings.HasPrefix(urlString, m.CacheHosts[0]) {
+		logger.Info().
+			Str("url", urlString).
+			Str("target_url", urlString).
+			Bool("enabled", true).
+			Msg("Cache URL already rewritten")
 		return urlString
 	}
 	if err != nil {
@@ -286,6 +304,9 @@ func (m *BufferMode) rewritePrefix(cacheHost, urlString string, parsed *url.URL,
 			Str("disabled_reason", "failed to join host URL to path").
 			Msg("Cache URL Rewrite")
 		return urlString
+	}
+	if parsed.RawQuery != "" {
+		newUrl = fmt.Sprintf("%s?%s", newUrl, parsed.RawQuery)
 	}
 	logger.Info().
 		Str("url", urlString).
