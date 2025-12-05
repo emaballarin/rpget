@@ -11,7 +11,7 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/pierrec/lz4 v2.6.1+incompatible
 	github.com/rs/zerolog v1.34.0
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.11.1
 	github.com/ulikunitz/xz v0.5.15
