@@ -1,6 +1,6 @@
 module github.com/emaballarin/rpget
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/dgryski/go-jump v0.0.0-20211018200510-ba001c3ffce0
@@ -15,7 +15,7 @@ require (
 	github.com/spf13/viper v1.21.0
 	github.com/stretchr/testify v1.12.1
 	github.com/ulikunitz/xz v0.5.16
-	golang.org/x/sync v0.22.0
+	golang.org/x/sync v0.23.0
 	golang.org/x/tools v0.49.0
 	gotest.tools/gotestsum v1.13.0
 )
